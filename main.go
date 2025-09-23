@@ -83,8 +83,8 @@ func parseMetrics(data string) (*Metrics, error) {
 func processAlerts(m *Metrics) {
 	NewAlert(m.LoadAvg, 30, "Load Average is too high: %d").Print()
 	NewAlert(m.RAMUsed*100/m.RAMTotal, 80, "Memory usage too high: %d%%").Print()
-	NewAlert(m.DiskTotal-m.DiskUsed, (m.DiskTotal*90)/100, "Free disk space is too low: %d Mb left").Print()
-	NewAlert(m.BandwidthTotal-m.BandwidthUsed, (m.BandwidthTotal*90)/100, "Network bandwidth usage high: %d Mbit/s available").Print()
+	NewAlert(m.DiskTotal-m.DiskUsed, m.DiskTotal/10, "Free disk space is too low: %d Mb left").Print()
+	NewAlert(m.BandwidthTotal-m.BandwidthUsed, m.BandwidthTotal/10, "Network bandwidth usage high: %d Mbit/s available").Print()
 }
 
 type Monitoring struct {
