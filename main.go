@@ -130,7 +130,6 @@ func (m *Monitoring) handleResponse(resp *http.Response) {
 
 	m.LastMetrics = metrics
 	m.resetErrorCount()
-	print(m.LastMetrics.BandwidthTotal)
 	processAlerts(metrics)
 }
 
