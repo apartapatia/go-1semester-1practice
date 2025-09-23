@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	serverURL = "http://localhost:5000"
+	serverURL = "http://srv.msk01.gigacorp.local"
 	interval  = 2 * time.Second
 )
 
