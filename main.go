@@ -64,14 +64,19 @@ func parseMetrics(data string) (*Metrics, error) {
 		values[i] = v
 	}
 
+	const (
+		valuesMB = 1024 * 1024
+		valuesMBs = 1000 * 1000
+	)
+
 	return &Metrics{
 		LoadAvg:        values[0],
-		RAMTotal:       values[1],
-		RAMUsed:        values[2],
-		DiskTotal:      values[3],
-		DiskUsed:       values[4],
-		BandwidthTotal: values[5],
-		BandwidthUsed:  values[6],
+		RAMTotal:       values[1] / valuesMB,
+		RAMUsed:        values[2] / valuesMB,
+		DiskTotal:      values[3] / valuesMB,
+		DiskUsed:       values[4] / valuesMB,
+		BandwidthTotal: values[5] / valuesMBs,
+		BandwidthUsed:  values[6] / valuesMBs,
 	}, nil
 }
 
