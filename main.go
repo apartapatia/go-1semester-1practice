@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	serverURL = "srv.msk01.gigacorp.local"
+	serverURL = "http://srv.msk01.gigacorp.local"
 	interval  = 2 * time.Second
 )
 
@@ -112,7 +112,7 @@ func (m *Monitoring) handleResponse(resp *http.Response) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Got read error %w", err)
+		fmt.Printf("Got read error %v\n", err)
 		m.incrementErrorCount()
 		return
 	}
@@ -137,6 +137,7 @@ func main() {
 	for {
 		resp, err := monitoring.Client.Get(monitoring.URL)
 		if err != nil {
+			fmt.Printf("Got response error %v\n", err)
 			monitoring.incrementErrorCount()
 		} else {
 			monitoring.handleResponse(resp)
