@@ -10,8 +10,10 @@ import (
 )
 
 const (
-	serverURL = "http://srv.msk01.gigacorp.local"
-	interval  = 2 * time.Second
+	serverURL   = "http://srv.msk01.gigacorp.local"
+	interval    = 2 * time.Second
+	bytesInMB   = 1024 * 1024
+	bytesInMbit = 1000 * 1000
 )
 
 type Alert struct {
@@ -64,27 +66,22 @@ func parseMetrics(data string) (*Metrics, error) {
 		values[i] = v
 	}
 
-	const (
-		valuesMB  = 1024 * 1024
-		valuesMBs = 1000 * 1000
-	)
-
 	return &Metrics{
 		LoadAvg:        values[0],
-		RAMTotal:       values[1] / valuesMB,
-		RAMUsed:        values[2] / valuesMB,
-		DiskTotal:      values[3] / valuesMB,
-		DiskUsed:       values[4] / valuesMB,
-		BandwidthTotal: values[5] / valuesMBs,
-		BandwidthUsed:  values[6] / valuesMBs,
+		RAMTotal:       values[1],
+		RAMUsed:        values[2],
+		DiskTotal:      values[3],
+		DiskUsed:       values[4],
+		BandwidthTotal: values[5],
+		BandwidthUsed:  values[6],
 	}, nil
 }
 
 func processAlerts(m *Metrics) {
 	NewAlert(m.LoadAvg, 30, "Load Average is too high: %d").Print()
 	NewAlert(m.RAMUsed*100/m.RAMTotal, 80, "Memory usage too high: %d%%").Print()
-	NewAlert(m.DiskTotal-m.DiskUsed, m.DiskTotal/10, "Free disk space is too low: %d Mb left").Print()
-	NewAlert(m.BandwidthTotal-m.BandwidthUsed, m.BandwidthTotal/10, "Network bandwidth usage high: %d Mbit/s available").Print()
+	NewAlert((m.DiskTotal-m.DiskUsed)/bytesInMB, (m.DiskTotal/10)/bytesInMB, "Free disk space is too low: %d Mb left").Print()
+	NewAlert((m.BandwidthTotal-m.BandwidthUsed)/bytesInMbit, (m.BandwidthTotal/10)/bytesInMbit, "Network bandwidth usage high: %d Mbit/s available").Print()
 }
 
 type Monitoring struct {
