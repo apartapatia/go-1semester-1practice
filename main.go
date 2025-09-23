@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	serverURL = "http://srv.msk01.gigacorp.local"
+	serverURL = "http://localhost:5000"
 	interval  = 2 * time.Second
 )
 
@@ -65,7 +65,7 @@ func parseMetrics(data string) (*Metrics, error) {
 	}
 
 	const (
-		valuesMB = 1024 * 1024
+		valuesMB  = 1024 * 1024
 		valuesMBs = 1000 * 1000
 	)
 
@@ -83,8 +83,8 @@ func parseMetrics(data string) (*Metrics, error) {
 func processAlerts(m *Metrics) {
 	NewAlert(m.LoadAvg, 30, "Load Average is too high: %d").Print()
 	NewAlert(m.RAMUsed*100/m.RAMTotal, 80, "Memory usage too high: %d%%").Print()
-	NewAlert(m.DiskUsed*100/m.DiskTotal, 90, "Free disk space is too low: %d%% Mb left").Print()
-	NewAlert(m.BandwidthUsed*100/m.BandwidthTotal, 90, "Network bandwidth usage high: %d%% Mbit/s available").Print()
+	NewAlert(m.DiskTotal-m.DiskUsed, (m.DiskTotal*90)/100, "Free disk space is too low: %d Mb left").Print()
+	NewAlert(m.BandwidthTotal-m.BandwidthUsed, (m.BandwidthTotal*90)/100, "Network bandwidth usage high: %d Mbit/s available").Print()
 }
 
 type Monitoring struct {
@@ -130,6 +130,7 @@ func (m *Monitoring) handleResponse(resp *http.Response) {
 
 	m.LastMetrics = metrics
 	m.resetErrorCount()
+	print(m.LastMetrics.BandwidthTotal)
 	processAlerts(metrics)
 }
 
