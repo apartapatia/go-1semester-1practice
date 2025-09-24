@@ -34,9 +34,15 @@ func NewAlert(value int, threshold int, message string) *Alert {
 	}
 }
 
-func (a *Alert) Print() {
+func (a *Alert) Print(custom_value ...int) {
 	if a.Triggered {
-		formattedMessage := fmt.Sprintf(a.Message, a.Value)
+		val := a.Value
+
+		if len(custom_value) > 0 {
+			val = custom_value[0]
+		}
+
+		formattedMessage := fmt.Sprintf(a.Message, val)
 		fmt.Println(formattedMessage)
 	}
 }
@@ -80,8 +86,8 @@ func parseMetrics(data string) (*Metrics, error) {
 func processAlerts(m *Metrics) {
 	NewAlert(m.LoadAvg, 30, "Load Average is too high: %d").Print()
 	NewAlert(m.RAMUsed*100/m.RAMTotal, 80, "Memory usage too high: %d%%").Print()
-	NewAlert((m.DiskTotal-m.DiskUsed)/bytesInMB, (m.DiskTotal/10)/bytesInMB, "Free disk space is too low: %d Mb left").Print()
-	NewAlert((m.BandwidthTotal-m.BandwidthUsed)/bytesInMbit, (m.BandwidthTotal/10)/bytesInMbit, "Network bandwidth usage high: %d Mbit/s available").Print()
+	NewAlert(m.DiskTotal*100/m.DiskTotal, 90, "Free disk space is too low: %d Mb left").Print((m.DiskTotal - m.DiskUsed) / bytesInMB)
+	NewAlert(m.BandwidthUsed*100/m.BandwidthTotal, 90, "Network bandwidth usage high: %d Mbit/s available").Print((m.BandwidthTotal - m.BandwidthUsed) / bytesInMbit)
 }
 
 type Monitoring struct {
