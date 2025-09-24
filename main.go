@@ -34,12 +34,12 @@ func NewAlert(value int, threshold int, message string) *Alert {
 	}
 }
 
-func (a *Alert) Print(custom_value ...int) {
+func (a *Alert) Print(customValue ...int) {
 	if a.Triggered {
 		val := a.Value
 
-		if len(custom_value) > 0 {
-			val = custom_value[0]
+		if len(customValue) > 0 {
+			val = customValue[0]
 		}
 
 		formattedMessage := fmt.Sprintf(a.Message, val)
@@ -86,7 +86,7 @@ func parseMetrics(data string) (*Metrics, error) {
 func processAlerts(m *Metrics) {
 	NewAlert(m.LoadAvg, 30, "Load Average is too high: %d").Print()
 	NewAlert(m.RAMUsed*100/m.RAMTotal, 80, "Memory usage too high: %d%%").Print()
-	NewAlert(m.DiskTotal*100/m.DiskTotal, 90, "Free disk space is too low: %d Mb left").Print((m.DiskTotal - m.DiskUsed) / bytesInMB)
+	NewAlert(m.DiskUsed*100/m.DiskTotal, 90, "Free disk space is too low: %d Mb left").Print((m.DiskTotal - m.DiskUsed) / bytesInMB)
 	NewAlert(m.BandwidthUsed*100/m.BandwidthTotal, 90, "Network bandwidth usage high: %d Mbit/s available").Print((m.BandwidthTotal - m.BandwidthUsed) / bytesInMbit)
 }
 
